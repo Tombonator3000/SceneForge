@@ -206,3 +206,29 @@
 **Neste steg:**
 - Teste med ekte OpenAI API-nokkel og MP3-fil
 - Vurdere Kling API-integrasjon for videogenerering
+
+## 2026-02-19T11:00:00Z -- GitHub Pages kompatibilitetsfikser
+
+**Handling:** Fikset tre problemer som hindret appen fra a kjore pa GitHub Pages: manglende .nojekyll, ingen error boundary, og Node-versjonsmismatch i workflow.
+
+**Filer opprettet:**
+- `public/.nojekyll` -- Tom fil som hindrer GitHub Pages fra a kjore Jekyll-prosessering. Uten denne kan GitHub Pages misbehandle assets og gi 404 pa CSS/JS.
+- `src/components/ErrorBoundary.jsx` -- React class component som fanger opp runtime-feil og viser lesbar feilside i stedet for blank hvit skjerm. Viser feilmelding og "Last pa nytt"-knapp.
+
+**Filer endret:**
+- `src/main.jsx` -- Pakker App-komponenten med ErrorBoundary slik at alle uhandterte JS-feil fanges og vises til brukeren.
+- `.github/workflows/deploy.yml` -- Oppdatert fra Node 20 til Node 22 (LTS, matcher lokalt miljo), lagt til `NODE_ENV: production` pa build-steget, lagt til eksplisitt `permissions`-blokk pa deploy-jobben for tydelighet.
+
+**Beslutninger:**
+- `.nojekyll` er kritisk: selv om GitHub Actions-deploy teknisk sett ikke bruker Jekyll, er filen en forsikring mot fremtidige konfigurasjonsendringer.
+- ErrorBoundary er en class component -- React API krever dette for error boundaries; funksjonelle komponenter stotter ikke getDerivedStateFromError/componentDidCatch.
+- Node 22 er valgt fordi det er LTS og matcher lokalt utvikling (v22.22.0). Package-lock.json er generert med Node 22 / npm 10.9.4.
+- Eksplisitt `permissions` pa deploy-jobben er god praksis og forhindrer sporsmalsmal om arvede tillatelser.
+
+**Verifisert:**
+- `npm run build` -- 0 feil, 44 moduler transformert (opp fra 43 -- ErrorBoundary lagt til).
+- `dist/.nojekyll` -- bekreftet kopiert fra public/ av Vite.
+
+**Neste steg:**
+- Aktiver GitHub Pages i repo-innstillinger (Settings -> Pages -> Source: GitHub Actions) hvis ikke gjort
+- Merge til main for a trigge deploy-workflow
