@@ -73,6 +73,13 @@
 - "Transkriber sangtekst"-knapp vises kun nar lydfil er lastet opp i Musikkanalyse-fanen
 - Feilmelding vises inline over textarea (ikke modal/alert)
 
+### GitHub Pages kompatibilitetsfikser (ferdig 2026-02-19)
+- `public/.nojekyll` -- hindrer Jekyll fra a prosessere filer, kopieres til dist/ av Vite
+- `src/components/ErrorBoundary.jsx` -- class component, fanger runtime-feil, viser feilside i stedet for blank skjerm
+- `src/main.jsx` -- App pakket i ErrorBoundary
+- `.github/workflows/deploy.yml` -- Node 22 (opp fra 20), NODE_ENV=production, eksplisitt permissions pa deploy-jobb
+- GitHub Pages ma aktiveres manuelt: Settings -> Pages -> Source: GitHub Actions
+
 ### Brukerpreferanser
 - Ingen emoji
 - Ingen em dash (bruk --)

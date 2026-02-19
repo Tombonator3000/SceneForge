@@ -84,6 +84,7 @@
 - [x] Splitt MusicVisApp.jsx til separate komponentfiler (ferdig 2026-02-19)
 - [ ] Trekk ut hooks (useAudio, useProject, useDragDrop)
 - [x] Sett opp Vite med React og Tailwind (ferdig 2026-02-19)
+- [x] GitHub Pages kompatibilitet (.nojekyll, ErrorBoundary, workflow, ferdig 2026-02-19)
 - [ ] Legg til TypeScript-typer
 - [ ] Tester
 
