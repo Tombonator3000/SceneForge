@@ -1,5 +1,21 @@
 # Project Log
 
+## 2026-02-19T22:00:00Z -- Egendefinert bildeopplasting og drag-and-drop reordering i Storyboard
+
+**Handling:** Implementerte egendefinert bildeopplasting og drag-and-drop reordering for Storyboard-fanen.
+
+**Filer endret:**
+- `src/components/StoryboardCard.jsx` -- Lagt til "Last opp"-knapp med skjult file-input og FileReader for lokale bilder. Lagt til `orderNumber`-prop med badge (amber #N) oeverst til venstre. Lagt til visuell drag-handle-indikator (:::) oeverst til hoeyre.
+- `src/MusicVisApp.jsx` -- Lagt til `storyboardOrder` state (flat array av shot-IDer), `useEffect` for synkronisering med `scenes` (nye shots legges til sist, slettede shots fjernes), `dragIndexRef` og `dragOverIndex` for HTML5 DnD. Storyboard-tab oppdatert: viser kort i `storyboardOrder`-rekkefolge, hvert kort har `draggable` og DnD-handlers, visuell highlight (amber ring + scale) pa drop-target. `orderNumber` sendes til StoryboardCard. Export/import inkluderer `storyboardOrder`.
+
+**Beslutninger:**
+- Bruker en separat `storyboardOrder`-array (flat liste av shot-IDer) fremfor aa reorganisere shots inni `scenes`. Dette unngaar aa rote med scene-strukturen mens rekkefolgendring i storyboard er uavhengig.
+- Synkroniserings-useEffect sjekker om noe faktisk har endret seg for aa unnga unoedige re-renders.
+- HTML5 Drag and Drop API brukt i tradaa med prosjektets tekniske stack (ingen tredjepartsbiblioteker).
+- IIFE-moenster i JSX for storyboard-tab for aa holde DnD-handlers og derived state lokalt uten ekstra komponent.
+
+**Neste steg:** Vurder aa legge til "Tilbakestill rekkefolge"-knapp. Vurder aa vise scenetittel-grupperinger i storyboard.
+
 ## 2026-02-19T00:00:00Z -- Project Start (forrige okt)
 - Mottok forespoorsel om a bygge et VidMuse-lignende musikkvideo-planleggingsverktoey
 - Analyserte 8 screenshots av VidMuse.ai-grensesnittet

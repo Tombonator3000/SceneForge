@@ -17,7 +17,9 @@
 - Creative Brief-editor (prosjektoversikt, script and sound)
 - Core Elements-haandtering (karakterer, props, lokasjoner) med bildeopplasting
 - Scene-editor med sammenleggbare paneler, shot-haandtering
-- Storyboard-grid med drag-and-drop bildeplassering
+- Storyboard-grid med drag-and-drop bildeplassering og reordering
+- Egendefinert bildeopplasting til storyboard-kort ("Last opp"-knapp, FileReader -> data URL)
+- Rekkefolgenumre (#1, #2, ...) pa storyboard-kort som oppdateres automatisk ved reordering
 - JSON eksport/import for prosjektpersistens
 - Mork slate-tema med amber aksent
 
@@ -80,6 +82,15 @@
 - `.github/workflows/deploy.yml` -- Node 22, NODE_ENV=production, bruker `JamesIves/github-pages-deploy-action@v4` som pusher til `gh-pages`-branch
 - GitHub Pages ma aktiveres manuelt: Settings -> Pages -> Source: "Deploy from a branch" -> "gh-pages / root"
 - `src/components/Waveform.jsx` -- Math.random() erstattet med useMemo for stabile barhoyder (forhindrer flimring under avspilling)
+
+### Storyboard reordering og egendefinerte bilder (ferdig 2026-02-19)
+- `storyboardOrder` state i MusicVisApp -- flat array av shot-IDer i display-rekkefolge
+- useEffect synkroniserer `storyboardOrder` med `scenes` (legger til nye shots sist, fjerner slettede)
+- HTML5 Drag and Drop: `draggable` + onDragStart/onDragOver/onDrop/onDragEnd pa wrapper-div
+- Visuell feedback: amber ring + scale-105 pa drop-target
+- StoryboardCard: `orderNumber` prop viser #N badge oeverst til venstre i bildeomnraadet
+- StoryboardCard: "Last opp"-knapp trigger skjult file-input, FileReader konverterer til data URL
+- storyboardOrder inkluderes i JSON-eksport/-import for persistens
 
 ### Brukerpreferanser
 - Ingen emoji

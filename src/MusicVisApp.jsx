@@ -65,6 +65,13 @@ export default function MusicVisApp() {
   const [scenes, setScenes] = useState(DEFAULT_SCENES);
   const [elements, setElements] = useState(DEFAULT_ELEMENTS);
 
+  // Storyboard ordering -- flat array of shot IDs in display order
+  const [storyboardOrder, setStoryboardOrder] = useState(() =>
+    DEFAULT_SCENES.flatMap((s) => s.shots.map((sh) => sh.id))
+  );
+  const dragIndexRef = useRef(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+
   // Whisper transcription
   const { transcribe, loading: whisperLoading, error: whisperError } = useWhisper();
 
@@ -117,6 +124,17 @@ export default function MusicVisApp() {
       audio.removeEventListener("ended", onEnded);
     };
   }, [audioUrl]);
+
+  // Sync storyboard order when shots are added or removed
+  useEffect(() => {
+    setStoryboardOrder((prev) => {
+      const allShotIds = scenes.flatMap((s) => s.shots.map((sh) => sh.id));
+      const filtered = prev.filter((id) => allShotIds.includes(id));
+      const newIds = allShotIds.filter((id) => !prev.includes(id));
+      if (filtered.length === prev.length && newIds.length === 0) return prev;
+      return [...filtered, ...newIds];
+    });
+  }, [scenes]);
 
   // Scene handlers
   const handleUpdateScene = (id, updates) => {
@@ -198,7 +216,7 @@ export default function MusicVisApp() {
 
   // Export / Import
   const handleExport = () => {
-    const data = { projectTitle, projectOverview, bpm, key, lyrics, phrases, selectedStyle, elements, scenes };
+    const data = { projectTitle, projectOverview, bpm, key, lyrics, phrases, selectedStyle, elements, scenes, storyboardOrder };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -224,6 +242,7 @@ export default function MusicVisApp() {
         if (data.selectedStyle) setSelectedStyle(data.selectedStyle);
         if (data.elements) setElements(data.elements);
         if (data.scenes) setScenes(data.scenes);
+        if (data.storyboardOrder) setStoryboardOrder(data.storyboardOrder);
       } catch {
         alert("Ugyldig prosjektfil.");
       }
@@ -559,24 +578,81 @@ export default function MusicVisApp() {
         )}
 
         {/* Storyboard-tab */}
-        {activeTab === "storyboard" && (
-          <div>
-            <h2 className="text-lg font-semibold text-white mb-4">Storyboard</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {scenes.flatMap((scene) =>
-                scene.shots.map((shot) => (
-                  <StoryboardCard
-                    key={shot.id}
-                    shot={shot}
-                    scene={scene}
-                    styleInfo={currentStyle}
-                    onUpdateShot={handleUpdateShot}
-                  />
-                ))
+        {activeTab === "storyboard" && (() => {
+          // Build flat ordered shot list from storyboardOrder
+          const orderedShots = storyboardOrder
+            .map((shotId) => {
+              for (const scene of scenes) {
+                const shot = scene.shots.find((sh) => sh.id === shotId);
+                if (shot) return { shot, scene };
+              }
+              return null;
+            })
+            .filter(Boolean);
+
+          const handleDragStart = (index) => {
+            dragIndexRef.current = index;
+          };
+
+          const handleDragOver = (e, index) => {
+            e.preventDefault();
+            if (dragOverIndex !== index) setDragOverIndex(index);
+          };
+
+          const handleDrop = (index) => {
+            const from = dragIndexRef.current;
+            if (from !== null && from !== index) {
+              const newOrder = [...storyboardOrder];
+              const [moved] = newOrder.splice(from, 1);
+              newOrder.splice(index, 0, moved);
+              setStoryboardOrder(newOrder);
+            }
+            setDragOverIndex(null);
+            dragIndexRef.current = null;
+          };
+
+          const handleDragEnd = () => {
+            setDragOverIndex(null);
+            dragIndexRef.current = null;
+          };
+
+          return (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-white">Storyboard</h2>
+                <div className="text-xs text-slate-500">Dra kortene for aa endre rekkefolge</div>
+              </div>
+              {orderedShots.length === 0 ? (
+                <div className="text-slate-500 text-sm">Ingen shots enda. Legg til scener og shots i Scener-fanen.</div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {orderedShots.map(({ shot, scene }, index) => (
+                    <div
+                      key={shot.id}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragLeave={() => setDragOverIndex(null)}
+                      onDrop={() => handleDrop(index)}
+                      onDragEnd={handleDragEnd}
+                      className={`cursor-grab active:cursor-grabbing transition-all ${
+                        dragOverIndex === index ? "ring-2 ring-amber-400 rounded-xl scale-105" : ""
+                      }`}
+                    >
+                      <StoryboardCard
+                        shot={shot}
+                        scene={scene}
+                        styleInfo={currentStyle}
+                        onUpdateShot={handleUpdateShot}
+                        orderNumber={index + 1}
+                      />
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Innstillinger-tab */}
         {activeTab === "settings" && <SettingsPanel />}
