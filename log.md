@@ -232,3 +232,31 @@
 **Neste steg:**
 - Aktiver GitHub Pages i repo-innstillinger (Settings -> Pages -> Source: GitHub Actions) hvis ikke gjort
 - Merge til main for a trigge deploy-workflow
+
+## 2026-02-19T21:00:00Z -- GitHub Pages deploy-fix: workflow og Waveform
+
+**Handling:** Fikset to gjenstaaende problemer som hindret GitHub Pages fra aa fungere. Byttet fra `actions/deploy-pages` (krever manuell "Source: GitHub Actions"-konfig) til `JamesIves/github-pages-deploy-action` som pusher til `gh-pages`-branch og fungerer med standard GitHub Pages branch-oppsett. Fikset i tillegg Math.random()-bug i Waveform.jsx.
+
+**Filer endret:**
+- `.github/workflows/deploy.yml` -- Byttet deploy-strategi: fjernet `actions/upload-pages-artifact` + `actions/deploy-pages`, la til `JamesIves/github-pages-deploy-action@v4` som pusher `dist/` til `gh-pages`-branch. Endret `permissions` til `contents: write` (nodvendig for branch-push). Samlet build og deploy til en jobb.
+- `src/components/Waveform.jsx` -- Erstattet `Math.random()` inne i render-funksjon med `useMemo` som genererer stabile barhoyder en gang ved mount. Math.random() inne i render foraarsaker flimring pa hvert re-render (skjer hvert sekund under avspilling av lyd).
+
+**Beslutninger:**
+- Forrige workflow brukte `actions/deploy-pages` som krever GitHub Pages konfigurert til "Source: GitHub Actions" -- dette er IKKE standardvalget nar man forst aktiverer GitHub Pages. Standard er "Branch: gh-pages / root". `JamesIves/github-pages-deploy-action` fungerer med standardoppsettet og er mer robust.
+- `clean: true` i JamesIves-action sikrer at `gh-pages`-branch alltid speiler `dist/`-innholdet uten utdaterte filer.
+- Waveform barhoyder er deterministiske (sum av sinuskurver) -- ser naturlig ut uten aa flimre under avspilling.
+
+**Aktivering av GitHub Pages:**
+For at deploy skal virke maa GitHub Pages aktiveres i repo-innstillinger:
+1. Settings -> Pages
+2. Source: "Deploy from a branch"
+3. Branch: "gh-pages" / "/ (root)"
+Etter at workflow kjoerer vil `gh-pages`-branch eksistere.
+
+**Verifisert:**
+- `npm run build` -- 0 feil, 44 moduler transformert.
+- Bygget inn Waveform-endring uten feil.
+
+**Neste steg:**
+- Merge PR til main for aa trigge deploy-workflow
+- Aktiver GitHub Pages i repo-innstillinger (Settings -> Pages -> Source: Deploy from a branch -> gh-pages)
