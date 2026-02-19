@@ -50,6 +50,11 @@
 - [ ] Bulk-generering av alle storyboard-frames
 - [ ] Teste med ekte VITE_FREEPIK_API_KEY
 
+### OpenAI Whisper (Sangtekst-transkribering)
+- [x] Implementere useWhisper hook (src/hooks/useWhisper.js)
+- [x] "Transkriber sangtekst"-knapp i Musikkanalyse-fanen med tidskoder
+- [ ] Teste med ekte OpenAI API-nokkel og MP3-fil
+
 ### Andre APIer (vurderes)
 - [ ] Midjourney / DALL-E for bildegenerering
 - [ ] Runway ML for videogenerering

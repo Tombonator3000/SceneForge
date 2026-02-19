@@ -183,3 +183,26 @@
 - Teste med ekte Anthropic API-nokkel
 - Vurdere a vise `imagePrompt`-feltet i ShotCard som en lesbar/redigerbar tekstboks
 - Vurdere a legge til "Behold eksisterende scener"-modus (append i stedet for replace)
+## 2026-02-19T20:00:00Z -- OpenAI Whisper-integrasjon i Musikkanalyse-fanen
+
+**Handling:** Lagt til "Transkriber sangtekst"-knapp i Musikkanalyse-fanen. Knappen vises nar en lydfil er lastet opp. Ved klikk sendes filen til OpenAI Whisper API (whisper-1, verbose_json) og resultatet formateres med tidskoder og settes inn i lyrics-feltet.
+
+**Filer opprettet:**
+- `src/hooks/useWhisper.js` -- Hook som sender lydfil til OpenAI Whisper API via FormData POST. Henter API-nokkel fra localStorage via getApiKey("openai"). Returnerer loading/error state og transcribe()-funksjon. Konverterer verbose_json-segmenter til timestampet tekst ([M:SS] linje).
+
+**Filer endret:**
+- `src/MusicVisApp.jsx` -- Importerer useWhisper. Instantierer hook og handleTranscribe-handler. "Transkriber sangtekst"-knapp vises kun nar audioFile er satt, med disabled-state under transkribering. Feilmelding vises over textarea nar noe feiler. Placeholder-tekst oppdatert.
+
+**Beslutninger:**
+- response_format=verbose_json gir segmenter med start/end-tidspunkter per linje -- lar brukeren matche sangtekst til musikktidslinje.
+- Tidskoder formateres som [M:SS] prefix per segment -- lesbart og kompakt.
+- Knappen vises kun nar audioFile eksisterer (ikke ved URL-less tilstand) -- logisk sted for handlingen.
+- Feilmelding inline over textarea (ikke alert) -- bedre UX.
+- OpenAI API-nokkel hentes fra localStorage via eksisterende getApiKey("openai") -- konsistent med resten av prosjektet.
+
+**Verifisert:**
+- npm run build -- 0 feil, 42 moduler transformert (opp fra 39).
+
+**Neste steg:**
+- Teste med ekte OpenAI API-nokkel og MP3-fil
+- Vurdere Kling API-integrasjon for videogenerering

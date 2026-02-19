@@ -66,6 +66,13 @@
 - Prompts bygges fra: beskrivelse + valgt stil (navn + beskrivelse) + quality tags
 - currentStyle beregnes i MusicVisApp og sendes som styleInfo ned til alle relevante komponenter
 
+### OpenAI Whisper-integrasjon (ferdig 2026-02-19)
+- src/hooks/useWhisper.js -- hook som sender lydfil til OpenAI Whisper API (whisper-1, verbose_json)
+- API-nokkel leses fra localStorage via getApiKey("openai") -- konsistent med Freepik-integrasjonen
+- Resultat formateres med tidskoder ([M:SS] per segment) og settes inn i lyrics-feltet
+- "Transkriber sangtekst"-knapp vises kun nar lydfil er lastet opp i Musikkanalyse-fanen
+- Feilmelding vises inline over textarea (ikke modal/alert)
+
 ### Brukerpreferanser
 - Ingen emoji
 - Ingen em dash (bruk --)
