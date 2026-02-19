@@ -131,3 +131,30 @@
 **Neste steg:**
 - Legge til API-nokkel i .env for testing
 - Vurdere Kling API-integrasjon for videogenerering
+
+## 2026-02-19T19:00:00Z -- GitHub Pages deploy og Settings-fane
+
+**Handling:** Satt opp GitHub Actions-deploy til GitHub Pages. Lagt til Settings-fane i appen der brukeren kan lagre API-nokler i localStorage. API-klienter leser nokler fra localStorage i stedet for .env.
+
+**Filer opprettet:**
+- `.github/workflows/deploy.yml` -- GitHub Actions-workflow: bygg med Vite, deploy til GitHub Pages via actions/upload-pages-artifact og actions/deploy-pages. Trigges pa push til main og manuelt (workflow_dispatch).
+- `src/utils/apiKeys.js` -- Utility for les/skriv av API-nokler i localStorage. Eksporterer getApiKey(service), setApiKey(service, value), getAllApiKeys(). Nokler lagres med sceneforge_-prefiks.
+- `src/components/SettingsPanel.jsx` -- Innstillingspanel med passord-felt for Freepik, Kling, OpenAI og Anthropic. Viser "Lagret"-badge per nokkel. Lagrer via setApiKey() pa knappetrykk.
+
+**Filer endret:**
+- `vite.config.js` -- Lagt til base: "/SceneForge/" for korrekt asset-paths pa GitHub Pages.
+- `package.json` -- Lagt til predeploy (npm run build) og deploy (gh-pages -d dist) scripts. Lagt til gh-pages som devDependency.
+- `src/utils/defaults.js` -- Lagt til { id: "settings", label: "Innstillinger" } i TABS.
+- `src/MusicVisApp.jsx` -- Importerer SettingsPanel. Rendrer settings-tab med <SettingsPanel />.
+- `src/hooks/useFreepik.js` -- Leser API-nokkel fra localStorage via getApiKey("freepik") i stedet for import.meta.env.VITE_FREEPIK_API_KEY. Feilmelding peker na til Innstillinger-fanen.
+
+**Beslutninger:**
+- localStorage-lagring er tilstrekkelig for et privat, klientside-prosjekt. Ingen backend trengs.
+- Nokler vises som password-type input for ikke a eksponere dem ved siden av noen som kikker.
+- gh-pages-script er backup for manuell deploy; primary deploy-kanal er GitHub Actions.
+- Settings-fanen er sist i fane-rekken (naturlig plassering for konfigurasjonsvalg).
+
+**Neste steg:**
+- Aktiver GitHub Pages i repo-innstillinger (Settings -> Pages -> Source: GitHub Actions)
+- Teste deploy ved a pushe til main
+- Vurdere Kling API-integrasjon for videogenerering

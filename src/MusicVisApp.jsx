@@ -4,6 +4,7 @@ import StyleCard from "./components/StyleCard";
 import ElementCard from "./components/ElementCard";
 import SceneEditor from "./components/SceneEditor";
 import StoryboardCard from "./components/StoryboardCard";
+import SettingsPanel from "./components/SettingsPanel";
 import formatTime from "./utils/formatTime";
 import generateId from "./utils/generateId";
 import {
@@ -497,6 +498,9 @@ export default function MusicVisApp() {
             </div>
           </div>
         )}
+
+        {/* Innstillinger-tab */}
+        {activeTab === "settings" && <SettingsPanel />}
 
       </main>
     </div>

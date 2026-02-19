@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react";
 import FreepikClient from "../api/freepik";
-
-const API_KEY = import.meta.env.VITE_FREEPIK_API_KEY;
+import { getApiKey } from "../utils/apiKeys";
 
 /**
  * Hook for generating images via Freepik API.
  * Handles submit + poll pattern and loading/error state.
+ * Reads API key from localStorage via getApiKey('freepik').
  *
  * @returns {{ generate, loading, error }}
  */
@@ -14,8 +14,9 @@ export function useFreepik() {
   const [error, setError] = useState(null);
 
   const generate = useCallback(async ({ prompt, onSuccess }) => {
-    if (!API_KEY) {
-      setError("VITE_FREEPIK_API_KEY mangler i .env");
+    const apiKey = getApiKey("freepik");
+    if (!apiKey) {
+      setError("Freepik API-nokkel mangler. Legg den inn under Innstillinger.");
       return;
     }
 
@@ -23,7 +24,7 @@ export function useFreepik() {
     setError(null);
 
     try {
-      const client = new FreepikClient({ apiKey: API_KEY });
+      const client = new FreepikClient({ apiKey });
       const result = await client.generate({ prompt });
 
       if (result.taskId) {

@@ -108,4 +108,5 @@ export const TABS = [
   { id: "elements", label: "Elementer" },
   { id: "scenes", label: "Scener" },
   { id: "storyboard", label: "Storyboard" },
+  { id: "settings", label: "Innstillinger" },
 ];
