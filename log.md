@@ -73,3 +73,32 @@
 - Splitte MusicVisApp.jsx til separate komponentfiler (Waveform, StyleCard, SceneEditor etc.)
 - Legge til Web Audio API waveform-rendering med canvas
 - Implementere Freepik API-integrasjon
+
+## 2026-02-19T17:00:00Z -- Oppsplitting av MusicVisApp.jsx til separate komponenter
+
+**Handling:** Splittet MusicVisApp.jsx fra monolitt til separate komponentfiler. Alle konstanter flyttet til utils/defaults.js. Hjelpefunksjoner til egne utils-filer. Bygg verifisert uten feil.
+
+**Filer opprettet:**
+- `src/utils/defaults.js` -- PHRASE_COLORS, PHRASE_LABEL_COLORS, DEFAULT_PHRASES, DEFAULT_STYLES, DEFAULT_ELEMENTS, DEFAULT_SCENES, TABS
+- `src/utils/formatTime.js` -- formatTime(seconds) helper
+- `src/utils/generateId.js` -- generateId() helper
+- `src/components/Waveform.jsx` -- waveform-komponent med phrase markers
+- `src/components/StyleCard.jsx` -- stilkort med gradient og valg-indikator
+- `src/components/ElementCard.jsx` -- element-kort for karakterer, rekvisitter, lokasjoner
+- `src/components/ShotCard.jsx` -- shot-kort med type-velger og beskrivelse
+- `src/components/SceneEditor.jsx` -- sammenleggbar scene-editor med ShotCard-liste
+
+**Filer endret:**
+- `src/MusicVisApp.jsx` -- redusert til rent orkestreringskomponent med imports, ingen lokale konstanter eller subkomponenter
+
+**Beslutninger:**
+- PHRASE_LABEL_COLORS inkludert i defaults.js selv om det ikke er nevnt eksplisitt i CLAUDE.md, da det er en naturlig konstant knyttet til PHRASE_COLORS
+- TABS konstanten flyttet til defaults.js for konsistens
+- Ingen funksjonalitetsendringer -- ren strukturell refaktorering
+
+**Verifisert:**
+- `npm run build` -- 0 feil, 36 moduler transformert, vellykket produksjonsbygg
+
+**Neste steg:**
+- Legge til Web Audio API waveform-rendering med canvas
+- Implementere Freepik API-integrasjon

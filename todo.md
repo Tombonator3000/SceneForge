@@ -68,7 +68,7 @@
 - [ ] Delbar lenke (statisk HTML-eksport)
 
 ## Phase 7 -- Modularisering
-- [ ] Splitt MusicVisApp.jsx til separate komponentfiler
+- [x] Splitt MusicVisApp.jsx til separate komponentfiler (ferdig 2026-02-19)
 - [ ] Trekk ut hooks (useAudio, useProject, useDragDrop)
 - [x] Sett opp Vite med React og Tailwind (ferdig 2026-02-19)
 - [ ] Legg til TypeScript-typer
