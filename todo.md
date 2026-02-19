@@ -8,6 +8,8 @@
 - [x] Creative Brief editor
 - [x] Scene/Shot list builder
 - [x] Drag and drop bildeplassering for storyboard
+- [x] Egendefinert bildeopplasting i storyboard (lokale bilder via "Last opp"-knapp)
+- [x] Drag-and-drop reordering av storyboard-kort med rekkefolgenumre (ferdig 2026-02-19)
 - [x] Storyboard grid view
 - [x] JSON eksport/import
 - [x] Mork tema med amber aksenter
