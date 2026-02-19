@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# Build
+dist/
+build/
+.next/
+
+# Large media (consider Git LFS)
+*.mp4
+*.mov
+*.avi
+*.wav
+*.mp3
+*.flac
+
+# Temporary
+*.tmp
+*.bak
+*.log
