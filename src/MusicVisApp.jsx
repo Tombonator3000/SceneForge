@@ -7,6 +7,7 @@ import StoryboardCard from "./components/StoryboardCard";
 import SettingsPanel from "./components/SettingsPanel";
 import formatTime from "./utils/formatTime";
 import generateId from "./utils/generateId";
+import useWhisper from "./hooks/useWhisper";
 import {
   PHRASE_COLORS,
   PHRASE_LABEL_COLORS,
@@ -45,6 +46,17 @@ export default function MusicVisApp() {
   );
   const [scenes, setScenes] = useState(DEFAULT_SCENES);
   const [elements, setElements] = useState(DEFAULT_ELEMENTS);
+
+  // Whisper transcription
+  const { transcribe, loading: whisperLoading, error: whisperError } = useWhisper();
+
+  const handleTranscribe = () => {
+    if (!audioFile) return;
+    transcribe({
+      file: audioFile,
+      onSuccess: (text) => setLyrics(text),
+    });
+  };
 
   // Audio handlers
   const handleAudioUpload = (e) => {
@@ -358,11 +370,27 @@ export default function MusicVisApp() {
 
               {/* Lyrics */}
               <div className="mt-4">
-                <label className="block text-xs text-slate-400 mb-1">Sangtekst</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs text-slate-400">Sangtekst</label>
+                  {audioFile && (
+                    <button
+                      onClick={handleTranscribe}
+                      disabled={whisperLoading}
+                      className="text-xs text-amber-400 border border-amber-400/30 px-3 py-1 rounded hover:bg-amber-400/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {whisperLoading ? "Transkriberer..." : "Transkriber sangtekst"}
+                    </button>
+                  )}
+                </div>
+                {whisperError && (
+                  <div className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded px-3 py-2 mb-2">
+                    {whisperError}
+                  </div>
+                )}
                 <textarea
                   className="w-full bg-slate-700/50 border border-slate-600 text-slate-300 text-sm rounded px-3 py-2 resize-none focus:outline-none focus:border-amber-400 font-mono"
                   rows={8}
-                  placeholder="Lim inn sangtekst her..."
+                  placeholder="Lim inn sangtekst her, eller bruk Transkriber-knappen..."
                   value={lyrics}
                   onChange={(e) => setLyrics(e.target.value)}
                 />
