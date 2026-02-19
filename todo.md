@@ -54,7 +54,13 @@
 - [ ] Midjourney / DALL-E for bildegenerering
 - [ ] Runway ML for videogenerering
 - [ ] ElevenLabs for voiceover
-- [ ] OpenAI/Anthropic for scene-analyse og forslag
+- [x] Anthropic Claude for storyboard-generering (ferdig 2026-02-19)
+
+### Anthropic (Storyboard-generering)
+- [x] Generer storyboard med Claude basert pa musikkstruktur, sangtekst og stil (ferdig 2026-02-19)
+- [ ] Vise/redigere imagePrompt-felt i ShotCard
+- [ ] "Append"-modus: legg til scener uten a erstatte eksisterende
+- [ ] Teste med ekte API-nokkel
 
 ## Phase 5 -- Timeline og Sync
 - [ ] Visuell tidslinje som synker musikk med scener/shots

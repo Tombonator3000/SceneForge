@@ -158,3 +158,28 @@
 - Aktiver GitHub Pages i repo-innstillinger (Settings -> Pages -> Source: GitHub Actions)
 - Teste deploy ved a pushe til main
 - Vurdere Kling API-integrasjon for videogenerering
+
+## 2026-02-19T20:00:00Z -- Storyboard-generator med Anthropic Claude API
+
+**Handling:** Lagt til "Generer storyboard"-knapp i Creative Brief-fanen. Knappen kaller Anthropic Claude API (claude-sonnet-4-20250514) med musikkstruktur (frasene med tidskoder), sangtekst og valgt visuell stil som kontekst. Claude returnerer et JSON-scene-oppsett som parses og erstatter eksisterende scener. Etter generering bytter appen automatisk til Scener-fanen.
+
+**Filer opprettet:**
+- `src/hooks/useStoryboardGenerator.js` -- Hook som kaller Anthropic Messages API direkte fra nettleseren. Bygger strukturert prompt med musikkfaser (konvertert til tidsstempler), sangtekst, stilbeskrivelse og prosjektoversikt. Parser JSON-respons og tildeler stabile ID-er til scener og shots. Returnerer generate/loading/error/clearError. Bruker `anthropic-dangerous-direct-browser-access: true`-header for browser-CORS.
+
+**Filer endret:**
+- `src/MusicVisApp.jsx` -- Importerer useStoryboardGenerator. Kaller hooken og definerer handleGenerateStoryboard som bruker onSuccess-callback til a sette nye scener og bytte til Scener-fanen. Creative Brief-tab utvidet med ny seksjon: beskrivende tekst, feilvisning med lukke-knapp, og en bred amber-knapp for generering.
+
+**Beslutninger:**
+- Modell satt til `claude-sonnet-4-20250514` som spesifisert i oppgaven.
+- `anthropic-dangerous-direct-browser-access: true` er pakrevd for direkte nettleser-API-kall. Brukeren ma veere klar over at API-nokkel er eksponert i nettleserens nettverk-log -- akseptabelt for et privat prosjekt.
+- Shot-objektet far et nytt `imagePrompt`-felt fra generatoren. Dette feltet ignoreres av ShotCard (det bruker `description`-feltet for Freepik-generering), men er lagret i scene-data for fremtidig bruk.
+- onSuccess erstatter alle eksisterende scener -- dette er tilsiktet (brukeren kan alltid angre via JSON import).
+- Etter vellykket generering bytter appen automatisk til Scener-fanen slik at brukeren ser resultatet umiddelbart.
+
+**Verifisert:**
+- `npm run build` -- 0 feil, 42 moduler transformert (opp fra 39).
+
+**Neste steg:**
+- Teste med ekte Anthropic API-nokkel
+- Vurdere a vise `imagePrompt`-feltet i ShotCard som en lesbar/redigerbar tekstboks
+- Vurdere a legge til "Behold eksisterende scener"-modus (append i stedet for replace)

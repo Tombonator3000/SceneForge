@@ -5,6 +5,7 @@ import ElementCard from "./components/ElementCard";
 import SceneEditor from "./components/SceneEditor";
 import StoryboardCard from "./components/StoryboardCard";
 import SettingsPanel from "./components/SettingsPanel";
+import useStoryboardGenerator from "./hooks/useStoryboardGenerator";
 import formatTime from "./utils/formatTime";
 import generateId from "./utils/generateId";
 import {
@@ -37,6 +38,23 @@ export default function MusicVisApp() {
   // Style state
   const [selectedStyle, setSelectedStyle] = useState("s1");
   const currentStyle = DEFAULT_STYLES.find((s) => s.id === selectedStyle) ?? null;
+
+  // Storyboard generator
+  const { generate: generateStoryboard, loading: storyboardLoading, error: storyboardError, clearError: clearStoryboardError } = useStoryboardGenerator();
+
+  const handleGenerateStoryboard = () => {
+    generateStoryboard({
+      phrases,
+      duration,
+      lyrics,
+      style: currentStyle,
+      projectOverview,
+      onSuccess: (newScenes) => {
+        setScenes(newScenes);
+        setActiveTab("scenes");
+      },
+    });
+  };
 
   // Project state
   const [projectTitle, setProjectTitle] = useState("Bardens Terningkast: En Legende om Skryt og Skatter");
@@ -415,6 +433,39 @@ export default function MusicVisApp() {
                 <div className="text-xs text-slate-400 mb-0.5">Stil</div>
                 <div className="text-white text-sm">{DEFAULT_STYLES.find((s) => s.id === selectedStyle)?.name ?? "--"}</div>
               </div>
+            </div>
+
+            {/* Storyboard generator */}
+            <div className="bg-slate-800/60 border border-amber-400/20 rounded-xl p-5 space-y-3">
+              <div>
+                <div className="text-sm font-semibold text-white mb-1">Generer storyboard</div>
+                <div className="text-xs text-slate-400">
+                  Bruker Anthropic Claude til aa analysere musikkstrukturen (frasene med tidskoder), sangteksten og valgt visuell stil, og genererer et komplett scene-oppsett med scenetitler, shot-beskrivelser, kameratyper og bilde-prompts. Eksisterende scener erstattes.
+                </div>
+              </div>
+              {storyboardError && (
+                <div className="flex items-start gap-2 bg-red-900/20 border border-red-500/30 rounded-lg px-3 py-2">
+                  <span className="text-xs text-red-400 flex-1">{storyboardError}</span>
+                  <button
+                    onClick={clearStoryboardError}
+                    className="text-red-600 hover:text-red-400 text-xs leading-none flex-shrink-0"
+                  >
+                    x
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={handleGenerateStoryboard}
+                disabled={storyboardLoading}
+                className="w-full py-2.5 bg-amber-400 text-slate-950 text-sm font-semibold rounded-lg hover:bg-amber-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {storyboardLoading ? "Genererer -- vent litt..." : "Generer storyboard med Claude"}
+              </button>
+              {storyboardLoading && (
+                <div className="text-xs text-slate-500 text-center">
+                  Claude analyserer musikk og genererer scener...
+                </div>
+              )}
             </div>
           </div>
         )}
