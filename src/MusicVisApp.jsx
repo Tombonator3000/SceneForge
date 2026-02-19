@@ -3,6 +3,7 @@ import Waveform from "./components/Waveform";
 import StyleCard from "./components/StyleCard";
 import ElementCard from "./components/ElementCard";
 import SceneEditor from "./components/SceneEditor";
+import StoryboardCard from "./components/StoryboardCard";
 import formatTime from "./utils/formatTime";
 import generateId from "./utils/generateId";
 import {
@@ -34,6 +35,7 @@ export default function MusicVisApp() {
 
   // Style state
   const [selectedStyle, setSelectedStyle] = useState("s1");
+  const currentStyle = DEFAULT_STYLES.find((s) => s.id === selectedStyle) ?? null;
 
   // Project state
   const [projectTitle, setProjectTitle] = useState("Bardens Terningkast: En Legende om Skryt og Skatter");
@@ -440,6 +442,7 @@ export default function MusicVisApp() {
                   element={element}
                   onUpdate={handleUpdateElement}
                   onRemove={handleRemoveElement}
+                  styleInfo={currentStyle}
                 />
               ))}
             </div>
@@ -468,6 +471,7 @@ export default function MusicVisApp() {
                   onAddShot={handleAddShot}
                   onUpdateShot={handleUpdateShot}
                   onRemoveShot={handleRemoveShot}
+                  styleInfo={currentStyle}
                 />
               ))}
             </div>
@@ -481,25 +485,13 @@ export default function MusicVisApp() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {scenes.flatMap((scene) =>
                 scene.shots.map((shot) => (
-                  <div key={shot.id} className="bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden">
-                    <div
-                      className="h-32 bg-slate-700/50 flex items-center justify-center cursor-pointer hover:bg-slate-700 transition-colors relative"
-                    >
-                      {shot.storyboardImage ? (
-                        <img src={shot.storyboardImage} alt="storyboard" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="text-slate-600 text-xs text-center px-2">
-                          <div className="mb-1">Dra bilde hit</div>
-                          <div>{shot.type}</div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2">
-                      <div className="text-xs text-amber-400 font-mono mb-0.5">{shot.type} -- {shot.duration}</div>
-                      <div className="text-xs text-slate-400 leading-tight">{shot.description}</div>
-                      <div className="text-xs text-slate-600 mt-1">{scene.title}</div>
-                    </div>
-                  </div>
+                  <StoryboardCard
+                    key={shot.id}
+                    shot={shot}
+                    scene={scene}
+                    styleInfo={currentStyle}
+                    onUpdateShot={handleUpdateShot}
+                  />
                 ))
               )}
             </div>

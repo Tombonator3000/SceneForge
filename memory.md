@@ -58,6 +58,14 @@
 - 79 BPM, G-dur, 4:35 varighet
 - 4 scener med 8 shots totalt i eksempeldata
 
+### Freepik API-integrasjon (ferdig 2026-02-19)
+- src/hooks/useFreepik.js -- hook som wrapper FreepikClient, haandterer submit+poll, loading/error state
+- API-nokkel leses fra VITE_FREEPIK_API_KEY i .env
+- ShotCard og ElementCard har "Generer bilde"-knapp med per-kort loading state
+- StoryboardCard i storyboard-tab har tilsvarende knapp med loading-overlay
+- Prompts bygges fra: beskrivelse + valgt stil (navn + beskrivelse) + quality tags
+- currentStyle beregnes i MusicVisApp og sendes som styleInfo ned til alle relevante komponenter
+
 ### Brukerpreferanser
 - Ingen emoji
 - Ingen em dash (bruk --)

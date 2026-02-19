@@ -42,11 +42,13 @@
 - [ ] Haaandter ulike aspect ratios og varigheter
 
 ### Freepik (Bildegenerering)
-- [ ] Undersoke Freepik AI API tilgjengelighet og prising
-- [ ] Implementere API-klient (src/api/freepik.js)
-- [ ] Generer referansebilder for karakterer, lokasjoner, props
-- [ ] Generer storyboard-frames basert pa shot-beskrivelser
+- [x] Undersoke Freepik AI API tilgjengelighet og prising
+- [x] Implementere API-klient (src/api/freepik.js)
+- [x] Implementere useFreepik hook (src/hooks/useFreepik.js)
+- [x] Generer referansebilder for karakterer, lokasjoner, props (ElementCard)
+- [x] Generer storyboard-frames basert pa shot-beskrivelser (ShotCard + StoryboardCard)
 - [ ] Bulk-generering av alle storyboard-frames
+- [ ] Teste med ekte VITE_FREEPIK_API_KEY
 
 ### Andre APIer (vurderes)
 - [ ] Midjourney / DALL-E for bildegenerering
