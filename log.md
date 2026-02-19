@@ -1,5 +1,25 @@
 # Project Log
 
+## 2026-02-19T23:30:00Z -- MP3-bytte, lagre og laste prosjekt
+
+**Handling:** Implementerte tre nye funksjoner i MusicVisApp.jsx:
+1. Bytte lydfil etter at en er lastet opp ("Bytt lydfil"-knapp i avspilleren)
+2. Lagre prosjekt til localStorage ("Lagre prosjekt"-knapp i header med "Lagret!"-feedback)
+3. Laste prosjekt fra localStorage automatisk ved oppstart
+
+**Filer endret:**
+- `src/MusicVisApp.jsx` -- Lagt til `changeAudioInputRef`, `saveStatus`, `savedAudioFileName` state. Ny `handleChangeAudio`-funksjon som revokerer gammel URL, stopper avspilling og laster ny fil. Ny `applyProjectData`-helper brukt av baade import og localStorage-load. Ny `handleSave` lagrer til localStorage med JSON. Auto-load `useEffect` pa mount. Header oppdatert med "Lagre prosjekt"-knapp (viser "Lagret!" i 2.5s). Musikk-tab: "Bytt lydfil"-knapp i avspilleren, hint om forrige lydfil nar ingen er lastet.
+
+**Beslutninger:**
+- Lydfilen (blob) kan ikke lagres til localStorage -- vi lagrer filnavnet som referanse og viser et hint om aa laste den opp paa nytt
+- Auto-load pa mount uten prompt: forventes at brukeren vil fortsette der de slapp
+- `applyProjectData` refaktorert ut fra `handleImport` saa baade localStorage og JSON-import bruker samme logikk
+- Eksport/import av JSON beholdes som foer, men Eksporter-knappen er naa noe nedtonet (slate i stedet for amber) for aa fremheve "Lagre prosjekt"
+
+**Neste steg:**
+- Vurder aa legge til "Nytt prosjekt"-knapp som resetter til defaults
+- Vurder aa legge til "Slett lagret prosjekt" i Innstillinger-fanen
+
 ## 2026-02-19T22:00:00Z -- Egendefinert bildeopplasting og drag-and-drop reordering i Storyboard
 
 **Handling:** Implementerte egendefinert bildeopplasting og drag-and-drop reordering for Storyboard-fanen.

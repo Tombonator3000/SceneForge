@@ -35,6 +35,11 @@ export default function MusicVisApp() {
   const [lyrics, setLyrics] = useState("");
   const [phrases, setPhrases] = useState(DEFAULT_PHRASES);
   const audioRef = useRef(null);
+  const changeAudioInputRef = useRef(null);
+
+  // Save/load state
+  const [saveStatus, setSaveStatus] = useState(null); // null | 'saved'
+  const [savedAudioFileName, setSavedAudioFileName] = useState(null);
 
   // Style state
   const [selectedStyle, setSelectedStyle] = useState("s1");
@@ -88,8 +93,24 @@ export default function MusicVisApp() {
     const file = e.target.files?.[0];
     if (!file) return;
     setAudioFile(file);
+    setSavedAudioFileName(null);
     const url = URL.createObjectURL(file);
     setAudioUrl(url);
+  };
+
+  const handleChangeAudio = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    if (audioRef.current) audioRef.current.pause();
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setAudioFile(file);
+    setSavedAudioFileName(null);
+    const url = URL.createObjectURL(file);
+    setAudioUrl(url);
+    // Reset input so same file can be re-selected
+    if (changeAudioInputRef.current) changeAudioInputRef.current.value = "";
   };
 
   const handlePlayPause = () => {
@@ -233,22 +254,65 @@ export default function MusicVisApp() {
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target.result);
-        if (data.projectTitle) setProjectTitle(data.projectTitle);
-        if (data.projectOverview) setProjectOverview(data.projectOverview);
-        if (data.bpm) setBpm(data.bpm);
-        if (data.key) setKey(data.key);
-        if (data.lyrics) setLyrics(data.lyrics);
-        if (data.phrases) setPhrases(data.phrases);
-        if (data.selectedStyle) setSelectedStyle(data.selectedStyle);
-        if (data.elements) setElements(data.elements);
-        if (data.scenes) setScenes(data.scenes);
-        if (data.storyboardOrder) setStoryboardOrder(data.storyboardOrder);
+        applyProjectData(data);
       } catch {
         alert("Ugyldig prosjektfil.");
       }
     };
     reader.readAsText(file);
   };
+
+  // Apply project data from any source (localStorage or JSON file)
+  const applyProjectData = (data) => {
+    if (data.projectTitle !== undefined) setProjectTitle(data.projectTitle);
+    if (data.projectOverview !== undefined) setProjectOverview(data.projectOverview);
+    if (data.bpm !== undefined) setBpm(data.bpm);
+    if (data.key !== undefined) setKey(data.key);
+    if (data.lyrics !== undefined) setLyrics(data.lyrics);
+    if (data.phrases !== undefined) setPhrases(data.phrases);
+    if (data.selectedStyle !== undefined) setSelectedStyle(data.selectedStyle);
+    if (data.elements !== undefined) setElements(data.elements);
+    if (data.scenes !== undefined) setScenes(data.scenes);
+    if (data.storyboardOrder !== undefined) setStoryboardOrder(data.storyboardOrder);
+    if (data.audioFileName) setSavedAudioFileName(data.audioFileName);
+  };
+
+  // Save project to localStorage
+  const handleSave = () => {
+    const data = {
+      projectTitle,
+      projectOverview,
+      bpm,
+      key,
+      lyrics,
+      phrases,
+      selectedStyle,
+      elements,
+      scenes,
+      storyboardOrder,
+      audioFileName: audioFile?.name ?? savedAudioFileName ?? null,
+    };
+    try {
+      localStorage.setItem("sceneforge-project", JSON.stringify(data));
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus(null), 2500);
+    } catch {
+      alert("Lagring feilet -- localStorage kan vaere full.");
+    }
+  };
+
+  // Auto-load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("sceneforge-project");
+    if (!saved) return;
+    try {
+      const data = JSON.parse(saved);
+      applyProjectData(data);
+    } catch {
+      // Ignorer korrupt data
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // -- Render --
 
@@ -272,14 +336,24 @@ export default function MusicVisApp() {
           </div>
           <div className="flex items-center gap-2">
             <label className="text-xs text-slate-400 border border-slate-700 px-3 py-1.5 rounded cursor-pointer hover:border-slate-500 transition-colors">
-              Importer
+              Importer JSON
               <input type="file" accept=".json" className="hidden" onChange={handleImport} />
             </label>
             <button
               onClick={handleExport}
-              className="text-xs text-amber-400 border border-amber-400/30 px-3 py-1.5 rounded hover:bg-amber-400/10 transition-colors"
+              className="text-xs text-slate-400 border border-slate-700 px-3 py-1.5 rounded hover:border-slate-500 transition-colors"
             >
               Eksporter JSON
+            </button>
+            <button
+              onClick={handleSave}
+              className={`text-xs px-3 py-1.5 rounded border transition-colors ${
+                saveStatus === "saved"
+                  ? "text-green-400 border-green-400/40 bg-green-400/10"
+                  : "text-amber-400 border-amber-400/30 hover:bg-amber-400/10"
+              }`}
+            >
+              {saveStatus === "saved" ? "Lagret!" : "Lagre prosjekt"}
             </button>
           </div>
         </div>
@@ -327,11 +401,18 @@ export default function MusicVisApp() {
 
               {/* Upload */}
               {!audioUrl ? (
-                <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-700 rounded-xl cursor-pointer hover:border-amber-400/50 transition-colors">
-                  <div className="text-slate-400 text-sm mb-1">Last opp lydfil</div>
-                  <div className="text-slate-600 text-xs">MP3, WAV, OGG, FLAC</div>
-                  <input type="file" accept="audio/*" className="hidden" onChange={handleAudioUpload} />
-                </label>
+                <div className="space-y-2">
+                  <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-700 rounded-xl cursor-pointer hover:border-amber-400/50 transition-colors">
+                    <div className="text-slate-400 text-sm mb-1">Last opp lydfil</div>
+                    <div className="text-slate-600 text-xs">MP3, WAV, OGG, FLAC</div>
+                    <input type="file" accept="audio/*" className="hidden" onChange={handleAudioUpload} />
+                  </label>
+                  {savedAudioFileName && (
+                    <div className="text-xs text-slate-500 bg-slate-800/40 border border-slate-700/40 rounded px-3 py-2">
+                      Forrige lydfil: <span className="text-slate-400 font-mono">{savedAudioFileName}</span> -- last den opp paa nytt for avspilling
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-3">
@@ -344,7 +425,19 @@ export default function MusicVisApp() {
                     <div className="text-sm text-slate-400 font-mono">
                       {formatTime(currentTime)} / {formatTime(duration)}
                     </div>
-                    <div className="ml-auto text-xs text-slate-500">{audioFile?.name}</div>
+                    <div className="ml-auto flex items-center gap-3">
+                      <span className="text-xs text-slate-500">{audioFile?.name}</span>
+                      <label className="text-xs text-slate-400 border border-slate-700 px-2 py-1 rounded cursor-pointer hover:border-slate-500 hover:text-slate-300 transition-colors">
+                        Bytt lydfil
+                        <input
+                          ref={changeAudioInputRef}
+                          type="file"
+                          accept="audio/*"
+                          className="hidden"
+                          onChange={handleChangeAudio}
+                        />
+                      </label>
+                    </div>
                   </div>
                   <Waveform
                     phrases={phrases}
