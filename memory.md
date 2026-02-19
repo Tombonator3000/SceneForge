@@ -30,11 +30,19 @@
 - Eksport som PDF/dokument
 
 ### Teknisk stack
-- React (single file artifact, skal modulariseres)
-- Tailwind CSS
-- Web Audio API for waveform
+- React 18 + Vite 6 (satt opp 2026-02-19)
+- Tailwind CSS 3 med postcss + autoprefixer
+- Web Audio API for waveform (implementert i MusicVisApp.jsx)
 - HTML5 Drag and Drop API
 - Fremtidig: API-klienter for Suno, Kling, Freepik
+
+### Vite-oppsett (ferdig 2026-02-19)
+- package.json, vite.config.js, tailwind.config.js, postcss.config.js opprettet
+- index.html -> src/main.jsx -> src/App.jsx -> src/MusicVisApp.jsx
+- src/index.css med Tailwind-direktiver
+- `npm run dev` starter pa localhost:5173
+- `npm run build` produserer dist/ uten feil
+- MusicVisApp.jsx er skrevet fra bunnen av basert pa CLAUDE.md/memory.md (original ble ikke commitet til repo)
 
 ### Eksempeldata fra forrige okt
 - Bardcore RPG-musikkvideotronsept

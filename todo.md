@@ -70,7 +70,7 @@
 ## Phase 7 -- Modularisering
 - [ ] Splitt MusicVisApp.jsx til separate komponentfiler
 - [ ] Trekk ut hooks (useAudio, useProject, useDragDrop)
-- [ ] Sett opp Vite eller Next.js for ordentlig build
+- [x] Sett opp Vite med React og Tailwind (ferdig 2026-02-19)
 - [ ] Legg til TypeScript-typer
 - [ ] Tester
 
