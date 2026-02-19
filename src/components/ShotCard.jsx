@@ -1,6 +1,29 @@
+import { useFreepik } from "../hooks/useFreepik";
+
 const SHOT_TYPES = ["Wide", "Medium", "Close-up", "ECU", "OTS", "POV", "Insert"];
 
-export default function ShotCard({ shot, onUpdate, onRemove }) {
+// Build a Freepik prompt from shot data and the current visual style
+const buildShotPrompt = (shot, styleInfo) => {
+  const parts = [shot.description].filter(Boolean);
+  if (styleInfo) {
+    parts.push(`${styleInfo.name} style`);
+    if (styleInfo.description) parts.push(styleInfo.description);
+  }
+  parts.push("cinematic, 16:9, high quality");
+  return parts.join(", ");
+};
+
+export default function ShotCard({ shot, onUpdate, onRemove, styleInfo }) {
+  const { generate, loading, error } = useFreepik();
+
+  const handleGenerate = () => {
+    const prompt = buildShotPrompt(shot, styleInfo);
+    generate({
+      prompt,
+      onSuccess: (url) => onUpdate(shot.id, { storyboardImage: url }),
+    });
+  };
+
   return (
     <div className="bg-slate-700/50 border border-slate-600/50 rounded-lg p-3">
       <div className="flex items-center gap-2 mb-2">
@@ -33,6 +56,26 @@ export default function ShotCard({ shot, onUpdate, onRemove }) {
         value={shot.description}
         onChange={(e) => onUpdate(shot.id, { description: e.target.value })}
       />
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          onClick={handleGenerate}
+          disabled={loading || !shot.description}
+          className="text-xs text-amber-400 border border-amber-400/30 px-2 py-1 rounded hover:bg-amber-400/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {loading ? "Genererer..." : "Generer bilde"}
+        </button>
+        {shot.storyboardImage && (
+          <button
+            onClick={() => onUpdate(shot.id, { storyboardImage: null })}
+            className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+          >
+            Fjern bilde
+          </button>
+        )}
+        {error && (
+          <span className="text-xs text-red-400 truncate" title={error}>Feil: {error}</span>
+        )}
+      </div>
     </div>
   );
 }

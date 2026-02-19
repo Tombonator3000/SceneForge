@@ -102,3 +102,32 @@
 **Neste steg:**
 - Legge til Web Audio API waveform-rendering med canvas
 - Implementere Freepik API-integrasjon
+
+## 2026-02-19T18:00:00Z -- Freepik API-integrasjon implementert
+
+**Handling:** Koblet opp Freepik bildegenerering i storyboard-view, scenes-view og elements-fanen. Knapper bruker shot/element-beskrivelse kombinert med valgt visuelle stilens navn og beskrivelse som prompt. Loading-states per kort. Ferdig bilde settes direkte inn.
+
+**Filer opprettet:**
+- `src/hooks/useFreepik.js` -- React-hook som wrapper FreepikClient. Haandterer generate() med polling for 4K, returnerer loading/error state. API-nokkel leses fra import.meta.env.VITE_FREEPIK_API_KEY.
+- `src/components/StoryboardCard.jsx` -- Storyboard-kort med "Generer bilde"-knapp, loading-overlay og "Fjern"-knapp. Bruker useFreepik internt.
+
+**Filer endret:**
+- `src/components/ShotCard.jsx` -- Lagt til useFreepik-hook, buildShotPrompt-funksjon, "Generer bilde"-knapp med loading/error/fjern-states. Ny prop: styleInfo.
+- `src/components/ElementCard.jsx` -- Lagt til useFreepik-hook, buildElementPrompt-funksjon, "Generer bilde"-knapp med loading/error/fjern-states. Viser generert bilde inline. Ny prop: styleInfo.
+- `src/components/SceneEditor.jsx` -- Videresender ny styleInfo-prop til ShotCard.
+- `src/MusicVisApp.jsx` -- Beregner currentStyle fra selectedStyle + DEFAULT_STYLES. Sender styleInfo til SceneEditor og ElementCard. Importerer og bruker StoryboardCard i storyboard-tab.
+- `.env.example` -- Oppdatert FREEPIK_API_KEY til VITE_FREEPIK_API_KEY med forklaring om VITE_-prefiks.
+
+**Beslutninger:**
+- Hver ShotCard/ElementCard/StoryboardCard har sin egen useFreepik-instans for uavhengig loading-state per kort -- slik at man kan generere flere bilder parallelt.
+- Prompt bygges som: [beskrivelse], [stilnavn] style, [stilbeskrivelse], cinematic, 16:9, high quality (for shots) / reference image, high quality (for elementer).
+- "Generer bilde"-knapp er disabled nar beskrivelse er tom eller generering pagaar.
+- Knappedesign folger prosjektets amber-aksent konvensjon.
+- buildShotPrompt er duplisert i ShotCard og StoryboardCard (samme logikk, separate kontekster) -- unnga prematur abstraksjon.
+
+**Verifisert:**
+- npm run build -- 0 feil, 39 moduler transformert (opp fra 36).
+
+**Neste steg:**
+- Legge til API-nokkel i .env for testing
+- Vurdere Kling API-integrasjon for videogenerering

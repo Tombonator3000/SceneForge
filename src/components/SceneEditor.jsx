@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ShotCard from "./ShotCard";
 
-export default function SceneEditor({ scene, onUpdate, onRemove, onAddShot, onUpdateShot, onRemoveShot }) {
+export default function SceneEditor({ scene, onUpdate, onRemove, onAddShot, onUpdateShot, onRemoveShot, styleInfo }) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -40,6 +40,7 @@ export default function SceneEditor({ scene, onUpdate, onRemove, onAddShot, onUp
                 shot={shot}
                 onUpdate={onUpdateShot}
                 onRemove={onRemoveShot}
+                styleInfo={styleInfo}
               />
             ))}
           </div>
