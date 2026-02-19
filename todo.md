@@ -85,6 +85,7 @@
 - [ ] Trekk ut hooks (useAudio, useProject, useDragDrop)
 - [x] Sett opp Vite med React og Tailwind (ferdig 2026-02-19)
 - [x] GitHub Pages kompatibilitet (.nojekyll, ErrorBoundary, workflow, ferdig 2026-02-19)
+- [x] GitHub Pages deploy-fix: bytt til JamesIves/github-pages-deploy-action, fiks Waveform flickering (ferdig 2026-02-19)
 - [ ] Legg til TypeScript-typer
 - [ ] Tester
 

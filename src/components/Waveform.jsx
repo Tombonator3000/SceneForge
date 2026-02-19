@@ -1,8 +1,16 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { PHRASE_COLORS } from "../utils/defaults";
 
 export default function Waveform({ phrases, duration, currentTime, onSeek, onAddPhrase, onRemovePhrase }) {
   const [hoveredPhrase, setHoveredPhrase] = useState(null);
+
+  // Generate stable bar heights once on mount -- Math.random() inside render causes flickering on every re-render
+  const barHeights = useMemo(
+    () => Array.from({ length: 120 }, (_, i) =>
+      20 + Math.sin(i * 0.3) * 15 + Math.sin(i * 0.7) * 10 + Math.abs(Math.sin(i * 1.9 + 0.5)) * 20
+    ),
+    []
+  );
 
   const handleCanvasClick = useCallback(
     (e) => {
@@ -21,16 +29,13 @@ export default function Waveform({ phrases, duration, currentTime, onSeek, onAdd
       >
         {/* Placeholder waveform bars */}
         <div className="absolute inset-0 flex items-center gap-px px-2">
-          {Array.from({ length: 120 }).map((_, i) => {
-            const h = 20 + Math.sin(i * 0.3) * 15 + Math.sin(i * 0.7) * 10 + Math.random() * 20;
-            return (
-              <div
-                key={i}
-                className="flex-1 bg-amber-400/40 rounded-sm"
-                style={{ height: `${h}%` }}
-              />
-            );
-          })}
+          {barHeights.map((h, i) => (
+            <div
+              key={i}
+              className="flex-1 bg-amber-400/40 rounded-sm"
+              style={{ height: `${h}%` }}
+            />
+          ))}
         </div>
         {/* Playhead */}
         {duration > 0 && (

@@ -77,8 +77,9 @@
 - `public/.nojekyll` -- hindrer Jekyll fra a prosessere filer, kopieres til dist/ av Vite
 - `src/components/ErrorBoundary.jsx` -- class component, fanger runtime-feil, viser feilside i stedet for blank skjerm
 - `src/main.jsx` -- App pakket i ErrorBoundary
-- `.github/workflows/deploy.yml` -- Node 22 (opp fra 20), NODE_ENV=production, eksplisitt permissions pa deploy-jobb
-- GitHub Pages ma aktiveres manuelt: Settings -> Pages -> Source: GitHub Actions
+- `.github/workflows/deploy.yml` -- Node 22, NODE_ENV=production, bruker `JamesIves/github-pages-deploy-action@v4` som pusher til `gh-pages`-branch
+- GitHub Pages ma aktiveres manuelt: Settings -> Pages -> Source: "Deploy from a branch" -> "gh-pages / root"
+- `src/components/Waveform.jsx` -- Math.random() erstattet med useMemo for stabile barhoyder (forhindrer flimring under avspilling)
 
 ### Brukerpreferanser
 - Ingen emoji
