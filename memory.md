@@ -44,6 +44,13 @@
 - `npm run build` produserer dist/ uten feil
 - MusicVisApp.jsx er skrevet fra bunnen av basert pa CLAUDE.md/memory.md (original ble ikke commitet til repo)
 
+### Komponentoppsplitting (ferdig 2026-02-19)
+- MusicVisApp.jsx splittet til separate komponentfiler
+- src/components/: Waveform.jsx, StyleCard.jsx, ElementCard.jsx, ShotCard.jsx, SceneEditor.jsx
+- src/utils/: defaults.js (alle konstanter), formatTime.js, generateId.js
+- MusicVisApp.jsx er naa et rent orkestreringskomponent med imports
+- `npm run build` -- 0 feil etter refaktorering
+
 ### Eksempeldata fra forrige okt
 - Bardcore RPG-musikkvideotronsept
 - Tittel: "Bardens Terningkast: En Legende om Skryt og Skatter"
